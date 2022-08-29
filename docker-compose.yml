@@ -1,0 +1,11 @@
+version: "3.7"
+services:
+
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nft-monitor:latest
+    container_name: nft-monitor
+    restart: on-failure
+    env_file: .env
