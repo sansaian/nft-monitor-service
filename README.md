@@ -18,7 +18,6 @@ displays it in the console.
 - Go 1.17
 - Docker
 - Gomock
--
 
 ## TODOS
 
@@ -88,11 +87,11 @@ docker-compose up -d
 
 # Resources
 
-| URL                                                                                       | description               |
-|-------------------------------------------------------------------------------------------|---------------------------|
-| https://docs.alchemy.com/reference/api-overview                                           | node provider             |
-| https://github.com/evrone/go-clean-template/tree/8fb159d185a8f00c16eed753f15f9bfeb8d67fb9 | template                  |
-| https://solscan.io/                                                                       | block explorer for solana |
-| https://docs.solana.com/                                                                  | solana docs               |
+| URL                                             | description               |
+|-------------------------------------------------|---------------------------|
+| https://docs.alchemy.com/reference/api-overview | node provider             |
+| https://github.com/evrone/go-clean-template/    | template                  |
+| https://solscan.io/                             | block explorer for solana |
+| https://docs.solana.com/                        | solana docs               |
 
 
