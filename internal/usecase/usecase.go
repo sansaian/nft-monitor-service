@@ -25,9 +25,12 @@ func New(log *logrus.Logger, blockchain Blockchain, timeWait int) *NFTMonitoring
 	}
 }
 
+// GetNFTDataFromBlock use case for get nft data from blockchain
 func (m *NFTMonitoring) GetNFTDataFromBlock(numBlock uint64) ([]*entities.NFTTokenData, error) {
 	isFinalized, err := m.isFinalizedBlock(numBlock)
+
 	if err != nil {
+		// if we have problem to connection,need retry the same block
 		if errors.Is(err, ErrConnectionProblem) {
 			m.log.Debugf("num block %d. connection problem try to reconect", numBlock)
 			m.wait()
@@ -35,6 +38,7 @@ func (m *NFTMonitoring) GetNFTDataFromBlock(numBlock uint64) ([]*entities.NFTTok
 		}
 		return nil, fmt.Errorf("failed get last finalized block %w", err)
 	}
+	//if block not finalized need wait
 	if !isFinalized {
 		m.log.Debugf("num block %d not finalize.Need wait", numBlock)
 		m.wait()
@@ -47,6 +51,7 @@ func (m *NFTMonitoring) GetNFTDataFromBlock(numBlock uint64) ([]*entities.NFTTok
 	return nftMetadata, nil
 }
 
+// isFinalizedBlock  check current is finalized or not
 func (m *NFTMonitoring) isFinalizedBlock(numBlock uint64) (bool, error) {
 	var err error
 	if m.lastBlock <= numBlock {
@@ -56,10 +61,10 @@ func (m *NFTMonitoring) isFinalizedBlock(numBlock uint64) (bool, error) {
 		}
 		return false, nil
 	}
-
 	return true, nil
 }
 
+// wait re-connection or finalized block
 func (m *NFTMonitoring) wait() {
 	m.log.Debugf("need sleeping %s sec", m.timeWait.String())
 	time.Sleep(m.timeWait)

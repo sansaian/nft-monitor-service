@@ -4,6 +4,8 @@ go 1.18
 
 require (
 	github.com/gagliardetto/solana-go v1.5.0
+	github.com/golang/mock v1.4.4
+	github.com/hashicorp/go-retryablehttp v0.7.1
 	github.com/near/borsh-go v0.3.2-0.20220516180422-1ff87d108454
 	github.com/portto/solana-go-sdk v1.21.0
 	github.com/sirupsen/logrus v1.2.0
@@ -23,7 +25,6 @@ require (
 	github.com/gagliardetto/treeout v0.1.4 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
-	github.com/hashicorp/go-retryablehttp v0.7.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect

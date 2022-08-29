@@ -10,6 +10,7 @@ import (
 	"github.com/portto/solana-go-sdk/client"
 	"github.com/portto/solana-go-sdk/common"
 	"github.com/portto/solana-go-sdk/program/metaplex/tokenmeta"
+	"github.com/portto/solana-go-sdk/rpc"
 	"github.com/sirupsen/logrus"
 	"io"
 	"strings"
@@ -20,10 +21,20 @@ import (
 	"nft-monitor-service/internal/usecase"
 )
 
+type solanaSDK interface {
+	GetBlock(ctx context.Context, slot uint64) (client.GetBlockResponse, error)
+	GetAccountInfo(ctx context.Context, base58Addr string) (client.AccountInfo, error)
+}
+
+type rpcSDK interface {
+	GetSlot(ctx context.Context) (rpc.JsonRpcResponse[uint64], error)
+}
+
 type ClientSolana struct {
 	cfg       *config.Config
 	log       *logrus.Logger
-	client    *client.Client
+	client    solanaSDK
+	rpcClient rpcSDK
 	programID solana.PublicKey
 	timeout   time.Duration
 }
@@ -35,14 +46,16 @@ func New(log *logrus.Logger, cfg *config.Config) *ClientSolana {
 		cfg:       cfg,
 		log:       log,
 		client:    c,
+		rpcClient: &c.RpcClient,
 		programID: cfg.Solana.ProgramID,
 		timeout:   time.Duration(cfg.Solana.Timeout) * time.Second}
 }
 
+// GetLastBlock get last slot in solana.
 func (sol *ClientSolana) GetLastBlock() (uint64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), sol.timeout)
 	defer cancel()
-	height, err := sol.client.RpcClient.GetSlot(ctx)
+	height, err := sol.rpcClient.GetSlot(ctx)
 	if err != nil {
 		if strings.Contains(err.Error(), errorMsgInternal) || strings.Contains(err.Error(), errorMsgToManyRequest) {
 			return 0, usecase.ErrConnectionProblem
@@ -52,6 +65,8 @@ func (sol *ClientSolana) GetLastBlock() (uint64, error) {
 	return height.Result, nil
 }
 
+// ParseBlock - get block by number. Then find transaction with programID,
+// after that get account info and parse metadata nft token
 func (sol *ClientSolana) ParseBlock(numBlock uint64) ([]*entities.NFTTokenData, error) {
 	sol.log.Debugf("start parsing block %d", numBlock)
 	defer sol.log.Debugf("finished parsing block %d", numBlock)
@@ -92,7 +107,6 @@ func (sol *ClientSolana) ParseBlock(numBlock uint64) ([]*entities.NFTTokenData, 
 }
 
 func (sol *ClientSolana) getMetadata(addressNFT string) (*ResponseNFTMeta, error) {
-
 	metadataAccount, err := tokenmeta.GetTokenMetaPubkey(common.PublicKeyFromString(addressNFT))
 	if err != nil {
 		return nil, fmt.Errorf("failed get token meta pubkey %w", err)

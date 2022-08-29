@@ -40,6 +40,7 @@ type ResponseNFTMeta struct {
 	} `json:"properties"`
 }
 
+// ConvertToEntity convert Response to business entity
 func (resp *ResponseNFTMeta) ConvertToEntity(tokenID string, blockNumber uint64) *entities.NFTTokenData {
 	blockNum := strconv.FormatUint(blockNumber, 10)
 	var creators []entities.Creator

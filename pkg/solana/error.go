@@ -2,6 +2,6 @@ package solana
 
 const (
 	errorMsgSkippedBlock  = "was skipped"
-	errorMsgToManyRequest = "Your app has exceeded its compute unit per second capacity"
-	errorMsgInternal      = "Internal error"
+	errorMsgToManyRequest = "\"code\":429"
+	errorMsgInternal      = "\"code\":-32603"
 )
